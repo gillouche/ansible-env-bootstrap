@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: ansible-env-bootstrap
+  description: Ensure Postman is installed via Homebrew Cask on macOS or via AUR/yay on Arch Linux.
+  license: MIT
+  min_ansible_version: '2.13'
+  platforms:
+    - name: MacOSX
+      versions: ['all']
+    - name: GenericLinux
+      versions: ['all']
+dependencies:
+  - role: homebrew
+    when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'
+  - role: aur-helper
+    when: >-
+      (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+      (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+      (distro | default('')) == 'archlinux'

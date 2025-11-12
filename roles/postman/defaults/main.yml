@@ -1,0 +1,3 @@
+---
+# Default variables for postman role
+role_execution_flag: "postman_was_executed"

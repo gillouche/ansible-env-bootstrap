@@ -1,0 +1,60 @@
+---
+# tasks file for zed (install Zed editor via Homebrew Cask on macOS or pacman/yay on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for Zed setup (macOS MacBook or Arch Linux)
+  set_fact:
+    zed_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    zed_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (zed_macos_allowed | bool or zed_arch_allowed | bool)
+
+- block:
+    - name: Ensure Zed is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: zed
+        state: present
+      become: false
+  when: zed_macos_allowed | bool
+
+- block:
+    - name: Gather installed package facts (Arch)
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Try to ensure Zed is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: zed
+        state: present
+      register: zed_pacman
+      ignore_errors: true
+      become: true
+
+    - name: Ensure Zed is present via AUR using yay (fallback to cask name 'zed')
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm zed'
+      register: zed_yay_install
+      changed_when: "'there is nothing to do' not in (zed_yay_install.stdout | lower)"
+      when: zed_pacman is failed and 'zed' not in (ansible_facts.packages | default({}).keys())
+      become: false
+
+    - name: Fallback to install Zed via AUR using yay (package name 'zed-editor')
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm zed-editor'
+      register: zed_yay_install_alt
+      changed_when: "'there is nothing to do' not in (zed_yay_install_alt.stdout | lower)"
+      when: zed_pacman is failed and 'zed' not in (ansible_facts.packages | default({}).keys()) and (zed_yay_install is not defined or zed_yay_install.rc != 0)
+      become: false
+  when: zed_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

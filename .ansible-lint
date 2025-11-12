@@ -1,0 +1,20 @@
+profile: production
+skip-list:
+  # Initially relax to adopt linter gradually; CI still runs but won't fail the build.
+  - yaml[line-length]
+  - schema[galaxy]
+  - var-naming
+  - role-name
+parseable: true
+mock-roles:
+  - test
+warn-list:
+  - fqcn
+  - risky-file-permissions
+  - latest
+  - yaml[truthy]
+
+exclude_paths:
+  - collections/
+  - inventories/
+  - uv.lock

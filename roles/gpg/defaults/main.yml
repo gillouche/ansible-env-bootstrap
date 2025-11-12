@@ -1,0 +1,3 @@
+---
+# Default variables for gpg role
+role_execution_flag: "gpg_was_executed"

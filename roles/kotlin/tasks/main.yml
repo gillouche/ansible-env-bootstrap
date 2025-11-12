@@ -1,0 +1,46 @@
+---
+# tasks file for kotlin (install Kotlin via Homebrew on macOS or pacman on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for Kotlin setup (macOS MacBook or Arch Linux)
+  set_fact:
+    kotlin_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    kotlin_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (kotlin_macos_allowed | bool or kotlin_arch_allowed | bool)
+
+- block:
+    - name: Ensure Kotlin is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name:
+          - kotlin
+          - maven
+          - gradle
+        state: present
+      become: false
+  when: kotlin_macos_allowed | bool
+
+- block:
+    - name: Ensure Kotlin is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name:
+          - kotlin
+          - maven
+          - gradle
+        state: present
+      become: true
+  when: kotlin_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

@@ -1,0 +1,3 @@
+---
+# Default variables for git role
+role_execution_flag: "git_was_executed"

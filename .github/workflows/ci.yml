@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  linux:
+    name: Lint and syntax-check (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python (match project requires-python)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        shell: bash
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Create virtual environment with uv
+        run: |
+          uv venv --python 3.14
+
+      - name: Sync project dependencies with uv
+        run: |
+          uv sync --locked
+
+      - name: Show ansible version
+        run: uv run ansible --version
+
+      - name: Run yamllint
+        run: |
+          uvx yamllint -s .
+
+      - name: Run ansible-lint
+        run: |
+          uvx ansible-lint -v || true
+          # We allow non-zero initially to avoid failing on legacy issues.
+
+      - name: Run role syntax checks
+        run: |
+          chmod +x tests/syntax_check_all.sh
+          uv run ./tests/syntax_check_all.sh
+
+  macos:
+    name: Lint and syntax-check (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python (match project requires-python)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        shell: bash
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Create virtual environment with uv
+        run: |
+          uv venv --python 3.14
+
+      - name: Sync project dependencies with uv
+        run: |
+          uv sync --locked
+
+      - name: Show ansible version
+        run: uv run ansible --version
+
+      - name: Run yamllint
+        run: |
+          uvx yamllint -s .
+
+      - name: Run ansible-lint
+        run: |
+          uvx ansible-lint -v || true
+
+      - name: Run role syntax checks
+        run: |
+          chmod +x tests/syntax_check_all.sh
+          uv run ./tests/syntax_check_all.sh

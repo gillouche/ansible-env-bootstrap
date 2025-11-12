@@ -1,0 +1,57 @@
+---
+# tasks file for gpg (install gnupg and GPGFrontend)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for GPG setup (macOS MacBook or Arch Linux)
+  set_fact:
+    gpg_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    gpg_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (gpg_macos_allowed | bool or gpg_arch_allowed | bool)
+
+- block:
+    - name: Ensure gnupg is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: gnupg
+        state: present
+      become: false
+
+    - name: Ensure GPGFrontend is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: gpgfrontend
+        state: present
+      become: false
+  when: gpg_macos_allowed | bool
+
+- block:
+    - name: Ensure gnupg is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: gnupg
+        state: present
+      become: true
+
+    - name: Gather installed package facts (Arch)
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Ensure GPGFrontend is present via AUR using yay (Arch Linux)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm gpgfrontend'
+      register: gpgfrontend_yay_install
+      changed_when: "'there is nothing to do' not in (gpgfrontend_yay_install.stdout | lower)"
+      when: ('gpgfrontend' not in (ansible_facts.packages | default({}).keys()))
+      become: false
+  when: gpg_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

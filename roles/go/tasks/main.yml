@@ -1,0 +1,40 @@
+---
+# tasks file for go (install Go via Homebrew on macOS or pacman on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for Go setup (macOS MacBook or Arch Linux)
+  set_fact:
+    go_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    go_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (go_macos_allowed | bool or go_arch_allowed | bool)
+
+- block:
+    - name: Ensure Go is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: go
+        state: present
+      become: false
+  when: go_macos_allowed | bool
+
+- block:
+    - name: Ensure Go is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: go
+        state: present
+      become: true
+  when: go_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

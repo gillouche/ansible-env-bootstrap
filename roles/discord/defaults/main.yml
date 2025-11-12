@@ -1,0 +1,3 @@
+---
+# Default variables for discord role
+role_execution_flag: "discord_was_executed"

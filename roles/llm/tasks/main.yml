@@ -1,0 +1,96 @@
+---
+# tasks file for llm (install ollama, gemini-cli, chatgpt)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for LLM tooling (macOS MacBook or Arch Linux)
+  set_fact:
+    llm_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    llm_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (llm_macos_allowed | bool or llm_arch_allowed | bool)
+
+- block:
+    - name: Ensure ollama is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: ollama
+        state: present
+      become: false
+
+    - name: Ensure gemini-cli is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: gemini-cli
+        state: present
+      ignore_errors: true
+      become: false
+
+    - name: Ensure ChatGPT desktop is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: chatgpt
+        state: present
+      become: false
+  when: llm_macos_allowed | bool
+
+- block:
+    - name: Gather installed package facts (Arch)
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Ensure ollama is installed via pacman if available (Arch Linux)
+      community.general.pacman:
+        name: ollama
+        state: present
+      register: llm_ollama_pacman
+      ignore_errors: true
+      become: true
+
+    - name: Ensure ollama is present via AUR using yay (Arch Linux)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm ollama'
+      register: llm_ollama_yay
+      changed_when: "'there is nothing to do' not in (llm_ollama_yay.stdout | lower)"
+      when: (llm_ollama_pacman is failed) and ('ollama' not in (ansible_facts.packages | default({}).keys()))
+      become: false
+
+    - name: Try to ensure ChatGPT desktop is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: chatgpt
+        state: present
+      register: llm_chatgpt_pacman
+      ignore_errors: true
+      become: true
+
+    - name: Ensure ChatGPT desktop is present via AUR using yay (chatgpt-desktop-bin)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm chatgpt-desktop-bin'
+      register: llm_chatgpt_yay
+      changed_when: "'there is nothing to do' not in (llm_chatgpt_yay.stdout | lower)"
+      when: (llm_chatgpt_pacman is failed) and ('chatgpt-desktop-bin' not in (ansible_facts.packages | default({}).keys()))
+      become: false
+
+    - name: Try to ensure gemini-cli is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: gemini-cli
+        state: present
+      register: llm_gemini_pacman
+      ignore_errors: true
+      become: true
+
+    - name: Ensure gemini-cli is present via AUR using yay (google-gemini-cli)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm google-gemini-cli'
+      register: llm_gemini_yay
+      changed_when: "'there is nothing to do' not in (llm_gemini_yay.stdout | lower)"
+      when: (llm_gemini_pacman is failed) and ('google-gemini-cli' not in (ansible_facts.packages | default({}).keys()))
+      become: false
+  when: llm_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

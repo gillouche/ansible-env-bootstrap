@@ -1,0 +1,40 @@
+---
+# tasks file for vlc (install VLC via Homebrew Cask on macOS or pacman on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for VLC setup (macOS MacBook or Arch Linux)
+  set_fact:
+    vlc_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    vlc_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (vlc_macos_allowed | bool or vlc_arch_allowed | bool)
+
+- block:
+    - name: Ensure VLC is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: vlc
+        state: present
+      become: false
+  when: vlc_macos_allowed | bool
+
+- block:
+    - name: Ensure VLC is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: vlc
+        state: present
+      become: true
+  when: vlc_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true
