@@ -55,4 +55,3 @@
   set_fact:
     "{{ role_execution_flag }}": true
     cacheable: true
-  

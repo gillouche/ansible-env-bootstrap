@@ -8,7 +8,8 @@
 - name: Determine allowed platforms for Qobuz setup (macOS MacBook or Arch Linux)
   set_fact:
     qobuz_macos_allowed: >-
-      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and
+         (device_type | default('')) == 'macbook' }}
     qobuz_arch_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
          (ansible_facts['distribution'] | default('')) == 'Archlinux' or
@@ -43,14 +44,17 @@
       ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm qobuz'
       register: qobuz_yay_install
       changed_when: "'there is nothing to do' not in (qobuz_yay_install.stdout | lower)"
-      when: (qobuz_pacman is failed) and ('qobuz' not in (ansible_facts.packages | default({}).keys()))
+      when: (qobuz_pacman is failed) and
+        ('qobuz' not in (ansible_facts.packages | default({}).keys()))
       become: false
 
     - name: Fallback Ensure Qobuz Desktop is present via AUR using yay (qobuz-desktop)
       ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm qobuz-desktop'
       register: qobuz_yay_install_alt
       changed_when: "'there is nothing to do' not in (qobuz_yay_install_alt.stdout | lower)"
-      when: (qobuz_pacman is failed) and ('qobuz' not in (ansible_facts.packages | default({}).keys())) and (qobuz_yay_install is not defined or qobuz_yay_install.rc != 0)
+      when: (qobuz_pacman is failed) and
+        ('qobuz' not in (ansible_facts.packages | default({}).keys()))
+        and (qobuz_yay_install is not defined or qobuz_yay_install.rc != 0)
       become: false
   when: qobuz_arch_allowed | bool
 

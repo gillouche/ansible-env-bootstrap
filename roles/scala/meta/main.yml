@@ -6,9 +6,9 @@ galaxy_info:
   min_ansible_version: '2.13'
   platforms:
     - name: MacOSX
-      versions: [ 'all' ]
+      versions: ['all']
     - name: GenericLinux
-      versions: [ 'all' ]
+      versions: ['all']
 dependencies:
   # Ensure platform prerequisites are validated before running this role
   - role: homebrew

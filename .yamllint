@@ -16,3 +16,4 @@ ignore: |
   collections/**
   uv.lock
   .venv/**
+  .yamllint
