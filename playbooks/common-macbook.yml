@@ -10,7 +10,7 @@
     - role: kubernetes
     - role: java
     - role: scala
-    - role: apache-spark
+    - role: apache_spark
     - role: git
     - role: python
     - role: go
@@ -20,7 +20,7 @@
     - role: firefox
     - role: vlc
     - role: calibre
-    - role: proton-privacy
+    - role: proton_privacy
     - role: discord
     - role: signal
     - role: caprine

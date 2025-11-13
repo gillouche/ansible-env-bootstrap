@@ -1,5 +1,5 @@
 ---
-# tasks file for proton-privacy (install Proton apps via Homebrew Cask on macOS or AUR/yay on Arch Linux)
+# tasks file for proton_privacy (install Proton apps via Homebrew Cask on macOS or AUR/yay on Arch Linux)
 
 - name: Skip if role already executed
   meta: end_role

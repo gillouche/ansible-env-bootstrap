@@ -1,5 +1,5 @@
 ---
-# tasks file for aur-helper (validates that an AUR helper like yay is available)
+# tasks file for aur_helper (validates that an AUR helper like yay is available)
 
 - name: Skip if role already executed
   meta: end_role

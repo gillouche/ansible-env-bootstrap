@@ -1,5 +1,5 @@
 ---
-# tasks file for apache-spark (install via Homebrew on macOS or pacman/yay on Arch Linux)
+# tasks file for apache_spark (install via Homebrew on macOS or pacman/yay on Arch Linux)
 
 - name: Skip if role already executed
   meta: end_role
@@ -21,7 +21,7 @@
 - block:
     - name: Ensure Apache Spark is installed via Homebrew (macOS)
       community.general.homebrew:
-        name: apache-spark
+        name: apache_spark
         state: present
       become: false
   when: spark_macos_allowed | bool
@@ -33,17 +33,17 @@
 
     - name: Try to ensure Apache Spark is installed via pacman (Arch Linux)
       community.general.pacman:
-        name: apache-spark
+        name: apache_spark
         state: present
       register: spark_pacman
       ignore_errors: true
       become: true
 
     - name: Ensure Apache Spark is present via AUR using yay (Arch Linux)
-      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm apache-spark'
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm apache_spark'
       register: spark_yay_install
       changed_when: "'there is nothing to do' not in (spark_yay_install.stdout | lower)"
-      when: (spark_pacman is failed) and ('apache-spark' not in (ansible_facts.packages | default({}).keys()))
+      when: (spark_pacman is failed) and ('apache_spark' not in (ansible_facts.packages | default({}).keys()))
       become: false
   when: spark_arch_allowed | bool
 

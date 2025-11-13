@@ -5,14 +5,14 @@
 - hosts: localhost
   roles:
     - base
-    - aur-helper
+    - aur_helper
     - env_setup
     - maintenance
     - utils
     - git
     - python
     - scala
-    - apache-spark
+    - apache_spark
     - go
     - rust
     - kotlin
@@ -20,7 +20,7 @@
     - firefox
     - vlc
     - calibre
-    - proton-privacy
+    - proton_privacy
     - discord
     - signal
     - caprine
