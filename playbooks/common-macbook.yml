@@ -5,6 +5,7 @@
 - hosts: localhost
   roles:
     - role: homebrew
+    - role: aur_helper
     - role: terminal
     - role: docker
     - role: kubernetes
@@ -36,3 +37,4 @@
     - role: neovim
     - role: tmux
     - role: jetbrains
+    - role: search

@@ -62,7 +62,9 @@
         state: link
         force: true
       loop: "{{ jdk_bundles.results }}"
-      when: item.stat.exists | default(false)
+      when:
+        - java_create_system_jdk_symlinks | default(false) | bool
+        - item.stat.exists | default(false)
       become: true
 
     - name: Locate jenv binary (macOS)
@@ -77,10 +79,9 @@
         bash -lc '"${JENV_BIN}" add "${JDK_HOME}"'
       environment:
         JENV_BIN: "{{ jenv_cmd.stdout | trim }}"
-        JDK_HOME: "{{ item }}"
-      loop:
-        - /Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home
-        - /Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home
+        JDK_HOME: "{{ item.item }}/Contents/Home"
+      loop: "{{ jdk_bundles.results }}"
+      when: item.stat.exists | default(false)
       changed_when: false
       failed_when: false
       become: false

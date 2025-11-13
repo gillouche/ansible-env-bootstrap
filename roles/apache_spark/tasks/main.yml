@@ -21,7 +21,7 @@
 - block:
     - name: Ensure Apache Spark is installed via Homebrew (macOS)
       community.general.homebrew:
-        name: apache_spark
+        name: apache-spark
         state: present
       become: false
   when: spark_macos_allowed | bool
