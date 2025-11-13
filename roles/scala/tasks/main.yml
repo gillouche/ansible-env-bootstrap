@@ -1,5 +1,5 @@
 ---
-# tasks file for scala (install Scala via Homebrew on macOS or pacman on Arch Linux)
+# tasks file for scala (mirror rust role structure)
 
 - name: Skip if role already executed
   meta: end_role
@@ -19,9 +19,9 @@
   when: not (scala_macos_allowed | bool or scala_arch_allowed | bool)
 
 - block:
-    - name: Ensure Scala is installed via Homebrew (macOS)
+    - name: Ensure Coursier is installed via Homebrew (macOS)
       community.general.homebrew:
-        name: scala
+        name: coursier
         state: present
       become: false
   when: scala_macos_allowed | bool

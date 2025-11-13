@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: Ensure Scala is installed via Homebrew on macOS or pacman on Arch Linux.
+  description: "Ensure Scala tooling is present: Coursier (cs) via Homebrew on macOS (MacBook) and Scala via pacman on Arch Linux."
   license: MIT
   min_ansible_version: '2.13'
   platforms:
