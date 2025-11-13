@@ -115,7 +115,7 @@
           - gradle
         state: latest
       become: true
-    
+
     - name: Ensure JAVA_HOME and PATH are configured in ~/.zshrc (Arch Linux)
       ansible.builtin.blockinfile:
         path: "{{ ansible_env.HOME }}/.zshrc"

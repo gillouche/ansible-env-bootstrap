@@ -9,7 +9,7 @@
   fail:
     msg: "The variable 'target_user' must be provided in order to run the playbook."
   when: target_user is not defined
-  
+
 - name: Print all available facts if debug verbosity 4 is enabled
   ansible.builtin.debug:
     msg:
@@ -35,7 +35,7 @@
       - "Default Network Interface: {{ ansible_facts['default_ipv4']['interface'] | default('N/A') }}"
       - "All IPv4 Addresses: {{ ansible_facts['all_ipv4_addresses'] }}"
     verbosity: 4
-    
+
 - name: Stop playbook after debug
   meta: end_play
   when: result.skipped is not defined

@@ -58,8 +58,8 @@
     - name: Ensure pyenv is installed (Arch) using pacman module
       community.general.pacman:
         name:
-         - pyenv
-         - uv
+          - pyenv
+          - uv
         state: present
       become: true
 
