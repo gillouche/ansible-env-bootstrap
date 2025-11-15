@@ -15,15 +15,27 @@
   when: not (nix_macos_allowed | bool)
 
 - block:
-    - name: Ensure Nix and direnv are installed via Homebrew (macOS)
+    - name: Ensure direnv is installed via Homebrew (nix must be installed manually) (macOS)
       community.general.homebrew:
         name:
-          - nix
           - direnv
         state: present
       become: false
 
   when: nix_macos_allowed | bool
+
+- name: Ensure Nix shell guard block is at top of ~/.zprofile
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zprofile"
+    create: true
+    insertbefore: BOF
+    block: |
+      # If inside a Nix shell, do not override PATH
+      if [[ -n "$IN_NIX_SHELL" ]]; then
+        return
+      fi
+  when: nix_macos_allowed | bool
+  become: false
 
 - name: Mark role as executed
   set_fact:

@@ -42,7 +42,7 @@
 
     - name: Clone dotfiles repository when missing
       ansible.builtin.git:
-        repo: https://github.com/gillouche/dotfiles
+        repo: git@github.com:gillouche/dotfiles.git
         dest: "{{ dotfiles_dir }}"
         version: HEAD
         update: false

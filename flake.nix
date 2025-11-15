@@ -10,19 +10,16 @@
             system = "aarch64-darwin";
             pkgs = nixpkgs.legacyPackages.${system};
         in {
+            shell = pkgs.zsh;
+
             devShells.${system}.default = pkgs.mkShell {
                 packages = [
-                    (pkgs.python314.withPackages (ps: [
-                        ps.setuptools
-                        ps.wheel
-                    ]))
+                    pkgs.python314
                     pkgs.uv
                 ];
 
                 shellHook = ''
                     echo "Python version: $(python3 --version)"
-                    export PYTHONDONTWRITEBYTECODE=1
-                    export PIP_DISABLE_PIP_VERSION_CHECK=1
                 '';
             };
     };

@@ -1,0 +1,3 @@
+---
+# Default variables for nix role
+role_execution_flag: "nix_was_executed"
