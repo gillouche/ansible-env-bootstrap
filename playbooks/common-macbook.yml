@@ -11,4 +11,3 @@
     - role: neovim
     - role: tmux
     - role: search
-
