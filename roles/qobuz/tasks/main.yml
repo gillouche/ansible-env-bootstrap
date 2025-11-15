@@ -1,0 +1,64 @@
+---
+# tasks file for qobuz (install via Homebrew Cask on macOS or AUR/yay on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for Qobuz setup (macOS MacBook or Arch Linux)
+  set_fact:
+    qobuz_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and
+         (device_type | default('')) == 'macbook' }}
+    qobuz_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (qobuz_macos_allowed | bool or qobuz_arch_allowed | bool)
+
+- block:
+    - name: Ensure Qobuz is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: qobuz
+        state: present
+      become: false
+  when: qobuz_macos_allowed | bool
+
+- block:
+    - name: Gather installed package facts (Arch)
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Try to ensure Qobuz is installed via pacman (Arch Linux) — likely unavailable
+      community.general.pacman:
+        name: qobuz
+        state: present
+      register: qobuz_pacman
+      ignore_errors: true
+      become: true
+
+    - name: Ensure Qobuz is present via AUR using yay (qobuz)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm qobuz'
+      register: qobuz_yay_install
+      changed_when: "'there is nothing to do' not in (qobuz_yay_install.stdout | lower)"
+      when: (qobuz_pacman is failed) and
+        ('qobuz' not in (ansible_facts.packages | default({}).keys()))
+      become: false
+
+    - name: Fallback Ensure Qobuz Desktop is present via AUR using yay (qobuz-desktop)
+      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm qobuz-desktop'
+      register: qobuz_yay_install_alt
+      changed_when: "'there is nothing to do' not in (qobuz_yay_install_alt.stdout | lower)"
+      when: (qobuz_pacman is failed) and
+        ('qobuz' not in (ansible_facts.packages | default({}).keys()))
+        and (qobuz_yay_install is not defined or qobuz_yay_install.rc != 0)
+      become: false
+  when: qobuz_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

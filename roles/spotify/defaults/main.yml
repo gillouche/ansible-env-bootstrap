@@ -1,0 +1,3 @@
+---
+# Default variables for spotify role
+role_execution_flag: "spotify_was_executed"

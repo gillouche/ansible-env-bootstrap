@@ -1,0 +1,49 @@
+---
+# tasks file for git (install git and GitHub CLI) — macOS only
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for git setup (macOS MacBook only)
+  set_fact:
+    git_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (git_macos_allowed | bool)
+
+- name: Define dotfiles paths
+  set_fact:
+    dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+    user_home_dir: "/Users/{{ target_user }}"
+
+- name: Ensure git and gh are installed via Homebrew (macOS)
+  community.general.homebrew:
+    name:
+      - git
+      - gh
+    state: present
+  become: false
+
+- name: Check if git config exists
+  stat:
+    path: "{{ user_home_dir }}/.gitconfig"
+  register: gitconfig_file
+  changed_when: false
+
+- name: Moving existing gitconfig to .gitconfig.backup
+  command: mv "/{{ user_home_dir }}/.gitconfig" "/{{ user_home_dir }}/.gitconfig.backup"
+  when: gitconfig_file.stat.exists and gitconfig_file.stat.islnk is defined and gitconfig_file.stat.islnk == False
+
+- name: Link gitconfig
+  file:
+    src: "/{{ user_home_dir }}/.config/dotfiles/git/gitconfig"
+    dest: "/{{ user_home_dir }}/.gitconfig"
+    state: link
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

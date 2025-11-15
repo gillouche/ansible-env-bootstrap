@@ -1,0 +1,46 @@
+---
+# tasks file for qemu (install QEMU and UTM on macOS; QEMU on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for qemu setup (macOS MacBook or Arch Linux)
+  set_fact:
+    qemu_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    qemu_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (qemu_macos_allowed | bool or qemu_arch_allowed | bool)
+
+- block:
+    - name: Ensure QEMU is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: qemu
+        state: present
+      become: false
+
+    - name: Ensure UTM is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: utm
+        state: present
+      become: false
+  when: qemu_macos_allowed | bool
+
+- block:
+    - name: Ensure QEMU is installed via pacman (Arch Linux)
+      community.general.pacman:
+        name: qemu
+        state: present
+      become: true
+  when: qemu_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

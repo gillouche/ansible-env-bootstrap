@@ -1,0 +1,31 @@
+---
+# tasks file for docker (macOS: colima)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for Docker tooling setup (macOS MacBook only)
+  set_fact:
+    docker_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (docker_macos_allowed | bool)
+
+- block:
+    - name: Ensure Colima is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name:
+          - colima
+          - docker
+          - docker-compose
+        state: present
+      become: false
+  when: docker_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

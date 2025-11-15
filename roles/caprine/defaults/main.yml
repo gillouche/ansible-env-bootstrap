@@ -1,0 +1,3 @@
+---
+# Default variables for caprine role
+role_execution_flag: "caprine_was_executed"

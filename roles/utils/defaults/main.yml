@@ -1,0 +1,3 @@
+---
+# Default variables for utils role
+role_execution_flag: "utils_was_executed"

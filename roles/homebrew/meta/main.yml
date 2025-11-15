@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: ansible-env-bootstrap
+  description: Validate Homebrew installation on macOS MacBook hosts and expose the brew_bin path for dependent roles.
+  license: MIT
+  min_ansible_version: '2.13'
+  platforms:
+    - name: MacOSX
+      versions: ['all']
+dependencies: []

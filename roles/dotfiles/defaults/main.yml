@@ -1,0 +1,3 @@
+---
+# Default variables for dotfiles role
+role_execution_flag: "dotfiles_was_executed"

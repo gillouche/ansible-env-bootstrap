@@ -1,0 +1,25 @@
+---
+- name: Import common macbook playbook
+  import_playbook: macbook-common.yml
+
+- hosts: localhost
+  roles:
+    - role: nix
+    - role: vlc
+    - role: calibre
+    - role: proton_privacy
+    - role: discord
+    - role: signal
+    - role: caprine
+    - role: spotify
+    - role: qobuz
+    - role: llm
+    - role: qemu
+    - role: raspberrypi
+    - role: jetbrains
+    - role: firefox
+    - role: docker
+    - role: kubernetes
+    - role: zed
+    - role: obsidian
+    - role: postman

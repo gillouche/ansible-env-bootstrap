@@ -1,0 +1,28 @@
+---
+# tasks file for zed (install Zed editor via Homebrew Cask on macOS)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for Zed setup (macOS MacBook only)
+  set_fact:
+    zed_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (zed_macos_allowed | bool)
+
+- block:
+    - name: Ensure Zed is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: zed
+        state: present
+      become: false
+  when: zed_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

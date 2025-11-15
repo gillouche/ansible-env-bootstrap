@@ -1,0 +1,70 @@
+---
+# tasks file for proton_privacy (install Proton apps via Homebrew Cask on macOS or AUR/yay on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for Proton apps setup (macOS MacBook or Arch Linux)
+  set_fact:
+    proton_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+    proton_arch_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
+         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
+         (distro | default('')) == 'archlinux' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (proton_macos_allowed | bool or proton_arch_allowed | bool)
+
+- block:
+    - name: Ensure Proton Drive is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: proton-drive
+        state: present
+      become: false
+    - name: Ensure Proton Mail is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: proton-mail
+        state: present
+      become: false
+    - name: Ensure Proton Pass is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: proton-pass
+        state: present
+      become: false
+    - name: Ensure ProtonVPN is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: protonvpn
+        state: present
+      become: false
+  when: proton_macos_allowed | bool
+
+- block:
+    - name: Gather installed package facts (Arch)
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Ensure Proton apps are present via AUR using yay (Arch Linux)
+      ansible.builtin.command: >-
+        bash -lc 'yay -S --needed --noconfirm ${PKG}'
+      register: proton_yay_install
+      changed_when: "'there is nothing to do' not in (proton_yay_install.stdout | lower)"
+      loop:
+        - proton-drive
+        - proton-mail
+        - proton-pass
+        - protonvpn
+      loop_control:
+        label: "{{ item }}"
+      environment:
+        PKG: "{{ item }}"
+      when: item not in (ansible_facts.packages | default({}))
+      become: false
+  when: proton_arch_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

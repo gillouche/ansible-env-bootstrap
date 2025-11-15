@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: ansible-env-bootstrap
+  description: Ensure Proton apps (Drive, Mail, Pass, VPN) are installed on macOS (Homebrew Cask) or Arch Linux (yay/AUR).
+  license: MIT
+  min_ansible_version: '2.13'
+  platforms:
+    - name: MacOSX
+      versions: ['all']
+    - name: GenericLinux
+      versions: ['all']
+dependencies:
+  - role: homebrew
+    when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'

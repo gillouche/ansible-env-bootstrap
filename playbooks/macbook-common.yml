@@ -1,0 +1,16 @@
+---
+- name: Import common playbook
+  import_playbook: common.yml
+
+- hosts: localhost
+  roles:
+    - role: homebrew
+    - role: dotfiles
+    - role: git
+    - role: tmux
+    - role: zsh
+    - role: terminal
+    - role: utils
+    - role: gpg
+    - role: neovim
+    - role: search

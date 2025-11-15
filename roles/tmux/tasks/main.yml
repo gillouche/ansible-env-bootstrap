@@ -1,0 +1,64 @@
+---
+# tasks file for tmux (install via Homebrew on macOS or pacman on Arch Linux)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platforms for tmux setup (macOS MacBook or Arch Linux)
+  set_fact:
+    tmux_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+  meta: end_role
+  when: not (tmux_macos_allowed | bool or tmux_arch_allowed | bool)
+
+- block:
+    - name: Ensure tmux is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name:
+          - tmux
+          - xclip
+        state: present
+      become: false
+
+    - name: Define dotfiles paths
+      set_fact:
+        dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+        user_home_dir: "/Users/{{ target_user }}"
+        target_group: staff
+  when: tmux_macos_allowed | bool
+
+- name: Create tmux plugins directory
+  file:
+    path: "/{{ user_home_dir }}/.tmux/plugins/"
+    state: directory
+    recurse: true
+    owner: "{{ target_user }}"
+    group: "{{ target_group }}"
+    mode: 0755
+  changed_when: false
+
+- name: Check if tmux plugin manager is installed
+  stat:
+    path: "/{{ user_home_dir }}/.tmux/plugins/tpm"
+  register: tpm_directory
+
+- name: Clone tmux plugin manager
+  git:
+    repo: "https://github.com/tmux-plugins/tpm"
+    dest: "/{{ user_home_dir }}/.tmux/plugins/tpm"
+    clone: true
+  when: tpm_directory.stat.exists == false
+
+- name: Create symlink config
+  file:
+    src: "{{ dotfiles_dir }}/tmux/tmux.conf"
+    dest: "/{{ user_home_dir }}/.tmux.conf"
+    state: link
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

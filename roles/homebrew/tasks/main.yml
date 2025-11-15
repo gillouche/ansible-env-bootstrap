@@ -1,0 +1,49 @@
+---
+# tasks file for homebrew
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine if role is allowed on this host (macOS MacBook only)
+  set_fact:
+    homebrew_allowed: "{{ ansible_facts['os_family'] == 'Darwin' and (device_type | default('')) == 'macbook' }}"
+
+- name: Stop role when not on a MacBook (Darwin)
+  meta: end_role
+  when: not homebrew_allowed | bool
+
+- name: Check for Homebrew binary paths
+  block:
+    - name: Check for brew at /opt/homebrew/bin/brew (Apple Silicon)
+      ansible.builtin.stat:
+        path: /opt/homebrew/bin/brew
+      register: brew_apple
+      become: false
+
+    - name: Check for brew at /usr/local/bin/brew (Intel)
+      ansible.builtin.stat:
+        path: /usr/local/bin/brew
+      register: brew_intel
+      become: false
+
+    - name: Set brew_bin fact when present
+      ansible.builtin.set_fact:
+        brew_bin: >-
+          {{ '/opt/homebrew/bin/brew' if brew_apple.stat.exists else
+             ('/usr/local/bin/brew' if brew_intel.stat.exists else '') }}
+
+    - name: Fail if Homebrew is not installed
+      ansible.builtin.fail:
+        msg: >-
+          Homebrew is not installed on this Mac. Please install it manually and rerun the playbook.
+          Install instructions: https://brew.sh
+      when: not (brew_apple.stat.exists or brew_intel.stat.exists)
+      become: false
+
+  when: homebrew_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

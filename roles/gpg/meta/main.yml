@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: ansible-env-bootstrap
+  description: Ensure GPG tools are installed (gnupg and GPGFrontend) via Homebrew on macOS or pacman/yay on Arch Linux.
+  license: MIT
+  min_ansible_version: '2.13'
+  platforms:
+    - name: MacOSX
+      versions: ['all']
+    - name: GenericLinux
+      versions: ['all']
+dependencies:
+  - role: homebrew
+    when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'

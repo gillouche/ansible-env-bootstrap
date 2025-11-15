@@ -1,0 +1,3 @@
+---
+# Default variables for signal role
+role_execution_flag: "signal_was_executed"

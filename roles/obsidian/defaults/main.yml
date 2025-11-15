@@ -1,0 +1,3 @@
+---
+# Default variables for obsidian role
+role_execution_flag: "obsidian_was_executed"

@@ -1,0 +1,63 @@
+---
+# tasks file for zsh (install and link config) — macOS only
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for zsh setup (macOS MacBook only)
+  set_fact:
+    zsh_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (zsh_macos_allowed | bool)
+
+- block:
+    - name: Define dotfiles paths
+      set_fact:
+        dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+        user_home_dir: "/Users/{{ target_user }}"
+        target_group: staff
+
+    - name: Check for .oh-my-zsh for user
+      stat:
+        path: "/{{ user_home_dir }}/.oh-my-zsh"
+      register: ohmyzsh_user_folder
+
+    - name: Download oh-my-zsh for user if not present
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/install_ohmyzsh.sh
+        mode: '0755'
+      when: not ohmyzsh_user_folder.stat.exists
+
+    - name: Install oh-my-zsh for user if not present
+      ansible.builtin.script:
+        cmd: /tmp/install_ohmyzsh.sh
+      become: no
+      when: not ohmyzsh_user_folder.stat.exists
+
+    - name: Check if .zshrc exists
+      ansible.builtin.stat:
+        path: "/{{ user_home_dir }}/.zshrc"
+      register: zshrc_file
+      changed_when: false
+
+    - name: Backup existing .zshrc when it is a regular file
+      ansible.builtin.command: mv "/{{ user_home_dir }}/.zshrc" "/{{ user_home_dir }}/.zshrc.backup"
+      when: zshrc_file.stat.exists and (zshrc_file.stat.islnk is not defined or zshrc_file.stat.islnk == False)
+
+    - name: Link .zshrc from dotfiles if available
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/zsh/zshrc"
+        dest: "/{{ user_home_dir }}/.zshrc"
+        state: link
+
+  when: zsh_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

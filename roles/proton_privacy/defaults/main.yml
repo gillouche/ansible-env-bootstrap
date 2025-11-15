@@ -1,0 +1,4 @@
+---
+# Default variables for proton_privacy role
+# This flag is used to ensure the role runs only once per host unless cleared.
+role_execution_flag: "proton_privacy_was_executed"

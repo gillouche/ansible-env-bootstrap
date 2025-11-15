@@ -1,0 +1,3 @@
+---
+# Default variables for qobuz role
+role_execution_flag: "qobuz_was_executed"

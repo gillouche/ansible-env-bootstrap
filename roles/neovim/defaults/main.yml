@@ -1,0 +1,3 @@
+---
+# Default variables for neovim role
+role_execution_flag: "neovim_was_executed"

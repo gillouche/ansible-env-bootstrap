@@ -1,0 +1,58 @@
+---
+# tasks file for dotfiles — ensure ~/.config/dotfiles exists by cloning repo (macOS MacBook only)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for dotfiles setup (macOS MacBook only)
+  set_fact:
+    dotfiles_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (dotfiles_macos_allowed | bool)
+
+- block:
+    - name: Define dotfiles paths
+      set_fact:
+        dotfiles_parent: "/Users/{{ target_user }}/.config"
+        dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+
+    - name: Check if dotfiles directory exists
+      ansible.builtin.stat:
+        path: "{{ dotfiles_dir }}"
+      register: dotfiles_dir_stat
+      changed_when: false
+
+    - name: Ensure parent config directory exists
+      ansible.builtin.file:
+        path: "{{ dotfiles_parent }}"
+        state: directory
+        mode: '0755'
+      when: not dotfiles_dir_stat.stat.exists
+
+    - name: Ensure git is installed (required for cloning)
+      community.general.homebrew:
+        name: git
+        state: present
+      become: false
+      when: not dotfiles_dir_stat.stat.exists
+
+    - name: Clone dotfiles repository when missing
+      ansible.builtin.git:
+        repo: https://github.com/gillouche/dotfiles
+        dest: "{{ dotfiles_dir }}"
+        version: HEAD
+        update: false
+        accept_hostkey: true
+      become: false
+      when: not dotfiles_dir_stat.stat.exists
+
+  when: dotfiles_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

@@ -1,0 +1,38 @@
+---
+# tasks file for kubernetes (kubectl + minikube; Rancher Desktop UI) — macOS only
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for Kubernetes tooling setup (macOS MacBook only)
+  set_fact:
+    k8s_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (k8s_macos_allowed | bool)
+
+- block:
+    - name: Ensure kubernetes CLI tools are installed via Homebrew (macOS)
+      community.general.homebrew:
+        name:
+          - kubectl
+          - minikube
+          - helm
+          - k9s
+        state: present
+      become: false
+
+    - name: Ensure Rancher Desktop is present via Homebrew Cask (macOS)
+      community.general.homebrew_cask:
+        name: rancher
+        state: present
+      become: false
+  when: k8s_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

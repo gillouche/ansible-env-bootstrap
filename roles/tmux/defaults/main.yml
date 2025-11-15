@@ -1,0 +1,3 @@
+---
+# Default variables for tmux role
+role_execution_flag: "tmux_was_executed"
