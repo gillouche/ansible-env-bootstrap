@@ -24,6 +24,28 @@
         name: neovim
         state: present
       become: false
+
+    - name: Define dotfiles paths
+      set_fact:
+        dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+        user_home_dir: "/Users/{{ target_user }}"
+        target_group: staff
+
+    - name: Check if nvim config folder exists
+      stat:
+        path: "{{ user_home_dir }}/.config/nvim"
+      register: nvim_config_folder_stat
+
+    - name: Backup existing Neovim config folder if it exists
+      command: mv "{{ user_home_dir }}/.config/nvim" "{{ dotfiles_dir }}/nvim_backup"
+      when: nvim_config_folder_stat.stat.exists
+
+    - name: Create symlink to Neovim config folder
+      file:
+        src: "{{ dotfiles_dir }}/neovim"
+        dest: "{{ user_home_dir }}/.config/nvim"
+        state: link
+
   when: neovim_macos_allowed | bool
 
 - block:
