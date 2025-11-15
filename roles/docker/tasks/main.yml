@@ -1,22 +1,18 @@
 ---
-# tasks file for docker (macOS: colima; Arch: docker)
+# tasks file for docker (macOS: colima)
 
 - name: Skip if role already executed
   meta: end_role
   when: vars[role_execution_flag] | default(false)
 
-- name: Determine allowed platforms for Docker tooling setup (macOS MacBook or Arch Linux)
+- name: Determine allowed platform for Docker tooling setup (macOS MacBook only)
   set_fact:
     docker_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
-    docker_arch_allowed: >-
-      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
-         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
-         (distro | default('')) == 'archlinux' }}
 
-- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+- name: Stop role when not on a supported platform (macOS MacBook)
   meta: end_role
-  when: not (docker_macos_allowed | bool or docker_arch_allowed | bool)
+  when: not (docker_macos_allowed | bool)
 
 - block:
     - name: Ensure Colima is installed via Homebrew (macOS)
@@ -28,20 +24,6 @@
         state: present
       become: false
   when: docker_macos_allowed | bool
-
-- block:
-    - name: Ensure Docker engine is installed via pacman (Arch Linux)
-      community.general.pacman:
-        name:
-          - docker
-          - docker-compose
-        state: present
-      become: true
-
-    - name: Gather installed package facts (Arch)
-      ansible.builtin.package_facts:
-        manager: auto
-  when: docker_arch_allowed | bool
 
 - name: Mark role as executed
   set_fact:

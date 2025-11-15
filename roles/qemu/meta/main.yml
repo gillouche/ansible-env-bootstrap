@@ -12,8 +12,3 @@ galaxy_info:
 dependencies:
   - role: homebrew
     when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'
-  - role: aur_helper
-    when: >-
-      (ansible_facts['os_family'] | default('')) == 'Archlinux' or
-      (ansible_facts['distribution'] | default('')) == 'Archlinux' or
-      (distro | default('')) == 'archlinux'

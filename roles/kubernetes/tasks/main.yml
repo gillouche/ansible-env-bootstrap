@@ -1,22 +1,18 @@
 ---
-# tasks file for kubernetes (kubectl + minikube; Rancher Desktop UI)
+# tasks file for kubernetes (kubectl + minikube; Rancher Desktop UI) — macOS only
 
 - name: Skip if role already executed
   meta: end_role
   when: vars[role_execution_flag] | default(false)
 
-- name: Determine allowed platforms for Kubernetes tooling setup (macOS MacBook or Arch Linux)
+- name: Determine allowed platform for Kubernetes tooling setup (macOS MacBook only)
   set_fact:
     k8s_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
-    k8s_arch_allowed: >-
-      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
-         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
-         (distro | default('')) == 'archlinux' }}
 
-- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+- name: Stop role when not on a supported platform (macOS MacBook)
   meta: end_role
-  when: not (k8s_macos_allowed | bool or k8s_arch_allowed | bool)
+  when: not (k8s_macos_allowed | bool)
 
 - block:
     - name: Ensure kubernetes CLI tools are installed via Homebrew (macOS)
@@ -35,29 +31,6 @@
         state: present
       become: false
   when: k8s_macos_allowed | bool
-
-- block:
-    - name: Ensure kubernetes CLI tools are installed via pacman (Arch Linux)
-      community.general.pacman:
-        name:
-          - kubectl
-          - minikube
-          - helm
-          - k9s
-        state: present
-      become: true
-
-    - name: Gather installed package facts (Arch)
-      ansible.builtin.package_facts:
-        manager: auto
-
-    - name: Ensure Rancher Desktop is present via AUR using yay (Arch Linux)
-      ansible.builtin.command: bash -lc 'yay -S --needed --noconfirm rancher-desktop'
-      register: k8s_rancher_yay_install
-      changed_when: "'there is nothing to do' not in (k8s_rancher_yay_install.stdout | lower)"
-      when: ('rancher-desktop' not in (ansible_facts.packages | default({}).keys()))
-      become: false
-  when: k8s_arch_allowed | bool
 
 - name: Mark role as executed
   set_fact:

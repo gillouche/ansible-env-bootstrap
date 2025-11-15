@@ -7,6 +7,4 @@ galaxy_info:
   platforms:
     - name: MacOSX
       versions: ['all']
-    - name: GenericLinux
-      versions: ['all']
 dependencies: []

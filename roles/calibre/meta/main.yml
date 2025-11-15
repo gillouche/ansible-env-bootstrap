@@ -1,20 +1,13 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: Ensure Calibre e-book manager is installed via Homebrew Cask on macOS or pacman on Arch Linux.
+  description: Ensure Calibre e-book manager is installed via Homebrew Cask on macOS.
   license: MIT
   min_ansible_version: '2.13'
   platforms:
     - name: MacOSX
       versions: ['all']
-    - name: GenericLinux
-      versions: ['all']
 dependencies:
   # Ensure platform prerequisites are validated before running this role
   - role: homebrew
     when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'
-  - role: aur_helper
-    when: >-
-      (ansible_facts['os_family'] | default('')) == 'Archlinux' or
-      (ansible_facts['distribution'] | default('')) == 'Archlinux' or
-      (distro | default('')) == 'archlinux'

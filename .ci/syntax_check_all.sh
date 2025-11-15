@@ -30,7 +30,7 @@ for role_path in "$ROLES_DIR"/*; do
     # Some roles expect these variables to exist. Provide safe defaults.
     target_user: testuser
     device_type: macbook
-    distro: archlinux
+    # macOS-only project; no distro variable needed anymore
     role_execution_flag: "${role_name}_executed"
   roles:
     - role: ${role_name}

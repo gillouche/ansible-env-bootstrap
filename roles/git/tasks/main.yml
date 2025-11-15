@@ -1,22 +1,18 @@
 ---
-# tasks file for git (install git and GitHub CLI)
+# tasks file for git (install git and GitHub CLI) — macOS only
 
 - name: Skip if role already executed
   meta: end_role
   when: vars[role_execution_flag] | default(false)
 
-- name: Determine allowed platforms for git setup (macOS MacBook or Arch Linux)
+- name: Determine allowed platform for git setup (macOS MacBook only)
   set_fact:
     git_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
-    git_arch_allowed: >-
-      {{ (ansible_facts['os_family'] | default('')) == 'Archlinux' or
-         (ansible_facts['distribution'] | default('')) == 'Archlinux' or
-         (distro | default('')) == 'archlinux' }}
 
-- name: Stop role when not on a supported platform (macOS MacBook or Arch Linux)
+- name: Stop role when not on a supported platform (macOS MacBook)
   meta: end_role
-  when: not (git_macos_allowed | bool or git_arch_allowed | bool)
+  when: not (git_macos_allowed | bool)
 
 - block:
     - name: Ensure git and gh are installed via Homebrew (macOS)
@@ -27,16 +23,6 @@
         state: present
       become: false
   when: git_macos_allowed | bool
-
-- block:
-    - name: Ensure git and github-cli are installed via pacman (Arch Linux)
-      community.general.pacman:
-        name:
-          - git
-          - github-cli
-        state: present
-      become: true
-  when: git_arch_allowed | bool
 
 - name: Mark role as executed
   set_fact:

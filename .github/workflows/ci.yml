@@ -9,12 +9,8 @@ on:
 
 jobs:
   ci:
-    name: Lint, syntax-check, and tests (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    name: Lint, syntax-check, and tests (macOS)
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
