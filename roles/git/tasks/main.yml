@@ -14,15 +14,34 @@
   meta: end_role
   when: not (git_macos_allowed | bool)
 
-- block:
-    - name: Ensure git and gh are installed via Homebrew (macOS)
-      community.general.homebrew:
-        name:
-          - git
-          - gh
-        state: present
-      become: false
-  when: git_macos_allowed | bool
+- name: Define dotfiles paths
+  set_fact:
+    dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+    user_home_dir: "/Users/{{ target_user }}"
+
+- name: Ensure git and gh are installed via Homebrew (macOS)
+  community.general.homebrew:
+    name:
+      - git
+      - gh
+    state: present
+  become: false
+
+- name: Check if git config exists
+  stat:
+    path: "{{ user_home_dir }}/.gitconfig"
+  register: gitconfig_file
+  changed_when: false
+
+- name: Moving existing gitconfig to .gitconfig.backup
+  command: mv "/{{ user_home_dir }}/.gitconfig" "/{{ user_home_dir }}/.gitconfig.backup"
+  when: gitconfig_file.stat.exists and gitconfig_file.stat.islnk is defined and gitconfig_file.stat.islnk == False
+
+- name: Link gitconfig
+  file:
+    src: "/{{ user_home_dir }}/.config/dotfiles/git/gitconfig"
+    dest: "/{{ user_home_dir }}/.gitconfig"
+    state: link
 
 - name: Mark role as executed
   set_fact:

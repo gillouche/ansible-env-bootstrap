@@ -5,9 +5,12 @@
 - hosts: localhost
   roles:
     - role: homebrew
+    - role: dotfiles
+    - role: git
+    - role: tmux
+    - role: zsh
     - role: terminal
     - role: utils
     - role: gpg
     - role: neovim
-    - role: tmux
     - role: search

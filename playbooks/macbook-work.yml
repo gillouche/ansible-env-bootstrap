@@ -1,6 +1,6 @@
 ---
 - name: Import common macbook playbook
-  import_playbook: common-macbook.yml
+  import_playbook: macbook-common.yml
 
 - hosts: localhost
   roles: []

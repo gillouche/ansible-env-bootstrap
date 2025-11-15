@@ -2,7 +2,7 @@
 
 set -eou pipefail
 
-SUPPORTED_ENVS=(desktop-arch macbook-personal macbook-work)
+SUPPORTED_ENVS=(macbook-common macbook-personal macbook-work)
 
 is_supported_env() {
   local e="$1"
@@ -18,7 +18,7 @@ usage() {
   echo "Usage: $0 <playbook.yml> <environment> [ansible_options]"
   echo "Or:    $0 <environment> [ansible_options]             # shorthand"
   echo "Or:    $0 <environment>.yml [ansible_options]         # shorthand"
-  echo "Environments: desktop-arch | macbook-personal | macbook-work"
+  echo "Environments: macbook-personal | macbook-work"
   echo "Examples:"
   echo "  $0 macbook-personal -vv"
   echo "  $0 macbook-personal -K            # ask become password if your play/tasks use become: true"

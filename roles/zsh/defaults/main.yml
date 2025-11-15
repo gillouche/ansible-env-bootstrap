@@ -1,0 +1,3 @@
+---
+# Default variables for zsh role
+role_execution_flag: "zsh_was_executed"

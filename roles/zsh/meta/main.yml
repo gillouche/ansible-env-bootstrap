@@ -1,13 +1,11 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: Ensure tmux is installed via Homebrew on macOS or pacman on Arch Linux.
+  description: Ensure zsh is installed and configured (macOS MacBook only).
   license: MIT
   min_ansible_version: '2.13'
   platforms:
     - name: MacOSX
-      versions: ['all']
-    - name: GenericLinux
       versions: ['all']
 dependencies:
   - role: homebrew

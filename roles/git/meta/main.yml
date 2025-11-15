@@ -12,3 +12,4 @@ galaxy_info:
 dependencies:
   - role: homebrew
     when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'
+  - role: dotfiles

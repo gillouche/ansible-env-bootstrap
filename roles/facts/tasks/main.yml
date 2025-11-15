@@ -36,9 +36,9 @@
       - "All IPv4 Addresses: {{ ansible_facts['all_ipv4_addresses'] }}"
     verbosity: 4
 
-- name: Stop playbook after debug
+- name: Optionally stop playbook after debug (disabled by default)
   meta: end_play
-  when: result.skipped is not defined
+  when: end_after_facts | default(false) | bool
 
 - name: Mark role as executed
   set_fact:
