@@ -1,9 +1,0 @@
----
-# Default variables for java role
-# This flag is used to ensure the role runs only once per host unless cleared.
-role_execution_flag: "java_was_executed"
-
-# On macOS, creating system-wide symlinks under /Library/Java/JavaVirtualMachines
-# requires sudo. By default we skip this to avoid sudo prompts during normal runs.
-# If you want these symlinks for legacy tool discovery, set this to true and run with -K.
-java_create_system_jdk_symlinks: false

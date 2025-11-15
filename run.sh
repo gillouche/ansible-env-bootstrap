@@ -105,4 +105,12 @@ fi
 
 echo "Using playbook: playbooks/${playbook}"
 echo "Using environment: ${env_name} (inventory: $inventory_path)"
-ansible-playbook -e target_user=$USER -i "$inventory_path" "playbooks/${playbook}" ${extra_opts}
+
+# Prefer running Ansible via uv to use the project's pinned Python deps from pyproject.toml/uv.lock
+if command -v uv >/dev/null 2>&1; then
+  echo "Running via uv (using project-managed dependencies)"
+  uv run ansible-playbook -e target_user=$USER -i "$inventory_path" "playbooks/${playbook}" ${extra_opts}
+else
+  echo "uv not found; falling back to system ansible-playbook"
+  ansible-playbook -e target_user=$USER -i "$inventory_path" "playbooks/${playbook}" ${extra_opts}
+fi

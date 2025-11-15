@@ -3,4 +3,24 @@
   import_playbook: common-macbook.yml
 
 - hosts: localhost
-  roles: []
+  roles:
+    - role: nix
+    - role: vlc
+    - role: calibre
+    - role: proton_privacy
+    - role: discord
+    - role: signal
+    - role: caprine
+    - role: spotify
+    - role: qobuz
+    - role: llm
+    - role: qemu
+    - role: raspberrypi
+    - role: jetbrains
+    - role: firefox
+    - role: git
+    - role: docker
+    - role: kubernetes
+    - role: zed
+    - role: obsidian
+    - role: postman

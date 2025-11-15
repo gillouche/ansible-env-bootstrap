@@ -1,26 +1,29 @@
 ---
-# tasks file for scala (macOS only)
+# tasks file for nix (install Nix and direnv) — macOS only via Homebrew
 
 - name: Skip if role already executed
   meta: end_role
   when: vars[role_execution_flag] | default(false)
 
-- name: Determine allowed platform for Scala setup (macOS MacBook only)
+- name: Determine allowed platform for Nix setup (macOS MacBook only)
   set_fact:
-    scala_macos_allowed: >-
+    nix_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
 
 - name: Stop role when not on a supported platform (macOS MacBook)
   meta: end_role
-  when: not (scala_macos_allowed | bool)
+  when: not (nix_macos_allowed | bool)
 
 - block:
-    - name: Ensure Coursier is installed via Homebrew (macOS)
+    - name: Ensure Nix and direnv are installed via Homebrew (macOS)
       community.general.homebrew:
-        name: coursier
+        name:
+          - nix
+          - direnv
         state: present
       become: false
-  when: scala_macos_allowed | bool
+
+  when: nix_macos_allowed | bool
 
 - name: Mark role as executed
   set_fact:

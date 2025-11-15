@@ -1,29 +1,31 @@
-This repository is now macOS-only.
+# ansible-env-bootstrap
 
-Highlights by role (macOS MacBook):
+Ansible project to setup new Macbook laptop.
 
-- kotlin: installs kotlin via Homebrew.
-- docker: installs colima and Docker CLI components via Homebrew.
-- kubernetes: installs kubectl, minikube, helm, k9s via Homebrew; Rancher Desktop via Homebrew Cask.
-- zed: installs Zed via Homebrew Cask.
-- firefox: installs Firefox via Homebrew Cask.
-- vlc: installs VLC via Homebrew Cask.
-- calibre: installs Calibre via Homebrew Cask.
-- terminal: installs iTerm2 via Homebrew Cask.
-- utils: installs common CLI tools via Homebrew (bpytop, glances, nmap, curl, wget, speedtest-cli, ncdu, jq, coreutils, appcleaner, ffmpeg, the-unarchiver).
-- proton-privacy: installs Proton apps via Homebrew Cask (Drive, Mail, Pass, VPN) when available.
-- discord: installs Discord via Homebrew Cask.
-- signal: installs Signal via Homebrew Cask.
-- caprine: installs Caprine via Homebrew Cask.
-- scala: installs Coursier (cs) via Homebrew.
-- apache-spark: installs Apache Spark via Homebrew.
-- llm: installs Ollama and Gemini CLI via Homebrew; ChatGPT via Homebrew Cask when available.
-- java: installs OpenJDK, OpenJDK@21, Maven, Gradle, and jenv via Homebrew and configures shell; system JDK symlinks are optional.
+This projects uses Nix and homebrew which are expected to be installed.
 
-Policy: Roles install software using Homebrew or Homebrew Cask and do not attempt to detect manual app installations under /Applications. This keeps roles deterministic and idempotent.
+## Development environment
 
-Dependency model
+This repository provides a Nix Flake dev shell with Python 3.14.
 
-- To keep roles small and clean, prerequisite checks happen once in dedicated roles and are reused via role dependencies:
-  - homebrew role: verifies Homebrew exists on macOS MacBooks and fails early if missing (no installation performed).
-  - Application roles (e.g., jetbrains, python) depend on these prerequisite roles and therefore do not perform ad-hoc shell checks for Homebrew themselves.
+How to use:
+- With direnv: run `direnv allow` once in the repo; the environment will auto-activate on cd.
+- Without direnv: run `nix develop` to enter the shell.
+- Verify with `python3 --version` (should report Python 3.14.x).
+
+Zsh configuration inside the dev shell:
+- The dev shell will source your `~/.zshrc` if you're using zsh. To disable this behavior, set `DISABLE_NIX_ZSHRC=1` before entering the shell.
+
+Notes about packaging tools on Python 3.14:
+- We intentionally do not include the python "pip" package from nixpkgs in the dev shell because it can pull in Sphinx → html5lib, which currently fails to build with Python 3.14 upstream.
+- Instead, the shell includes `uv`, a fast Python package and project manager. Use uv's native workflow — no pip:
+  - Initialize/refresh the environment: `uv sync`
+  - Run tools from project deps: `uv run ansible-playbook -i <inventory> playbooks/<pb>.yml`
+  - Add a dependency: `uv add <package>` (or `uv add -E dev <package>` for dev-only)
+  - Update deps: `uv lock --upgrade`
+  - Lint examples: `uv run ansible-lint` and `uv run yamllint .`
+
+All dependencies are defined in pyproject.toml and locked in uv.lock.
+
+
+

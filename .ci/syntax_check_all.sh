@@ -11,6 +11,12 @@ mkdir -p "$TMP_DIR"
 
 rc=0
 
+# Prefer running Ansible via uv so dependencies come from pyproject.toml/uv.lock
+ANSIBLE_CMD="ansible-playbook"
+if command -v uv >/dev/null 2>&1; then
+  ANSIBLE_CMD="uv run ansible-playbook"
+fi
+
 for role_path in "$ROLES_DIR"/*; do
   [ -d "$role_path" ] || continue
   role_name="$(basename "$role_path")"
@@ -40,7 +46,7 @@ for role_path in "$ROLES_DIR"/*; do
 EOF
 
   echo "[syntax-check] $role_name"
-  if ! ansible-playbook -i 'localhost,' -c local --syntax-check "$playbook"; then
+  if ! $ANSIBLE_CMD -i 'localhost,' -c local --syntax-check "$playbook"; then
     echo "Syntax check failed for role: $role_name" >&2
     rc=1
   fi
