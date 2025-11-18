@@ -38,7 +38,7 @@
 
     - name: Backup existing Neovim config folder if it exists
       command: mv "{{ user_home_dir }}/.config/nvim" "{{ dotfiles_dir }}/nvim_backup"
-      when: nvim_config_folder_stat.stat.exists
+      when: nvim_config_folder_stat.stat.exists and (sym.stat.islnk is defined and sym.stat.islnk == False)
 
     - name: Create symlink to Neovim config folder
       file:
