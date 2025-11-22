@@ -24,3 +24,6 @@
     - role: obsidian
     - role: postman
     - role: ukelele
+
+- name: Import post task playbook
+  import_playbook: post-tasks.yml

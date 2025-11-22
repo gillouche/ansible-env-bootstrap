@@ -1,0 +1,10 @@
+---
+
+- hosts: localhost
+  roles: []
+
+  post_tasks:
+    - name: Warn about missing ~/.gitconfig.user
+      debug:
+        msg: "Create ~/.gitconfig.user with your Git name + email"
+      when: gitconfig_user_missing | default(false)
