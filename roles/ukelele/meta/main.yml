@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: Ensure Karabiner-Elements is installed via Homebrew Cask on macOS MacBook hosts.
+  description: Ensure Ukelele is installed via Homebrew Cask on macOS MacBook hosts.
   license: MIT
   min_ansible_version: '2.13'
   platforms:
