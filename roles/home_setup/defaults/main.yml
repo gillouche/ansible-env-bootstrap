@@ -1,0 +1,4 @@
+---
+# Default variables for home_setup role
+# This flag is used to ensure the role runs only once per host unless cleared.
+role_execution_flag: "home_setup_was_executed"

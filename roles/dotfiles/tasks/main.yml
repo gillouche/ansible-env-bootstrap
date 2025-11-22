@@ -17,8 +17,9 @@
 - block:
     - name: Define dotfiles paths
       set_fact:
-        dotfiles_parent: "/Users/{{ target_user }}/.config"
-        dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+        # If a dotfiles_dir was exported by home_setup, use it. Otherwise default to projects under Desktop.
+        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/Desktop/workspace/projects/dotfiles')) }}"
+        dotfiles_parent: "{{ dotfiles_dir | dirname }}"
 
     - name: Check if dotfiles directory exists
       ansible.builtin.stat:
@@ -31,12 +32,6 @@
         path: "{{ dotfiles_parent }}"
         state: directory
         mode: '0755'
-      when: not dotfiles_dir_stat.stat.exists
-
-    - name: Ensure git is installed (required for cloning)
-      community.general.homebrew:
-        name: git
-        state: present
       become: false
       when: not dotfiles_dir_stat.stat.exists
 

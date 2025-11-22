@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: ansible-env-bootstrap
+  description: Prepare user workspace directories and export variables for other roles.
+  license: MIT
+  min_ansible_version: '2.13'
+  platforms:
+    - name: MacOSX
+      versions: ['all']
+dependencies: []

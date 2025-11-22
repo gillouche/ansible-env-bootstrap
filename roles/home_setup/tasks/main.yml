@@ -1,0 +1,51 @@
+---
+# tasks file for home_setup — create workspace/{playground/projects} and export paths (macOS MacBook only)
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for home_setup (macOS MacBook only)
+  set_fact:
+    home_setup_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (home_setup_macos_allowed | bool)
+
+- block:
+    - name: Define playground and projects roots under user's Desktop
+      set_fact:
+        workspace_root: "{{ ansible_env.HOME }}/Desktop/workspace"
+        playground_root: "{{ ansible_env.HOME }}/Desktop/workspace/playground"
+        projects_root: "{{ ansible_env.HOME }}/Desktop/workspace/projects"
+        dotfiles_dir: "{{ ansible_env.HOME }}/Desktop/workspace/projects/dotfiles"
+
+    - name: Ensure workspace root exists
+      ansible.builtin.file:
+        path: "{{ workspace_root }}"
+        state: directory
+        mode: '0755'
+      become: false
+
+    - name: Ensure playground root exists
+      ansible.builtin.file:
+        path: "{{ playground_root }}"
+        state: directory
+        mode: '0755'
+      become: false
+
+    - name: Ensure projects root exists
+      ansible.builtin.file:
+        path: "{{ projects_root }}"
+        state: directory
+        mode: '0755'
+      become: false
+
+  when: home_setup_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

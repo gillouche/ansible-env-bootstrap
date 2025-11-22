@@ -4,9 +4,10 @@
 
 - hosts: localhost
   roles:
+    - role: home_setup
     - role: homebrew
-    - role: dotfiles
     - role: git
+    - role: dotfiles
     - role: tmux
     - role: zsh
     - role: terminal

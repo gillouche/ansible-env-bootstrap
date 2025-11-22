@@ -16,7 +16,8 @@
 
 - name: Define dotfiles paths
   set_fact:
-    dotfiles_dir: "/Users/{{ target_user }}/.config/dotfiles"
+    # Prefer dotfiles_dir exported by home_setup; fallback to projects path on Desktop
+    dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/Desktop/workspace/projects/dotfiles')) }}"
     user_home_dir: "/Users/{{ target_user }}"
 
 - name: Ensure git and gh are installed via Homebrew (macOS)
@@ -39,9 +40,10 @@
 
 - name: Link gitconfig
   file:
-    src: "/{{ user_home_dir }}/.config/dotfiles/git/gitconfig"
+    src: "{{ dotfiles_dir }}/git/gitconfig"
     dest: "/{{ user_home_dir }}/.gitconfig"
     state: link
+    force: true
 
 - name: Mark role as executed
   set_fact:
