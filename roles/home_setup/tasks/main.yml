@@ -29,6 +29,24 @@
         mode: '0755'
       become: false
 
+    - name: Define home workspace symlink path
+      set_fact:
+        home_workspace_link: "{{ ansible_env.HOME }}/workspace"
+
+    - name: Check if home workspace symlink already exists
+      ansible.builtin.stat:
+        path: "{{ home_workspace_link }}"
+      register: home_workspace_link_stat
+      changed_when: false
+
+    - name: Create home workspace symlink to Desktop/workspace when missing
+      ansible.builtin.file:
+        src: "{{ workspace_root }}"
+        dest: "{{ home_workspace_link }}"
+        state: link
+      when: not (home_workspace_link_stat.stat.exists | default(false))
+      become: false
+
     - name: Ensure playground root exists
       ansible.builtin.file:
         path: "{{ playground_root }}"
