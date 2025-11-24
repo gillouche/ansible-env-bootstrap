@@ -14,4 +14,3 @@
     - role: utils
     - role: gpg
     - role: neovim
-    - role: search

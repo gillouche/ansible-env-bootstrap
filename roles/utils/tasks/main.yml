@@ -31,6 +31,10 @@
           - appcleaner
           - ffmpeg
           - the-unarchiver
+          - tree
+          - the_silver_searcher
+          - ripgrep
+          - fzf
         state: present
       become: false
   when: utils_macos_allowed | bool
