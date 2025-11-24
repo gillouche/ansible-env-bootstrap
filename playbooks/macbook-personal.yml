@@ -25,6 +25,7 @@
     - role: postman
     - role: ukelele
     - role: thunderbird
+    - role: transmission
 
 - name: Import post task playbook
   import_playbook: post-tasks.yml

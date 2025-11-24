@@ -1,0 +1,3 @@
+---
+# Default variables for transmission role
+role_execution_flag: "transmission_was_executed"
