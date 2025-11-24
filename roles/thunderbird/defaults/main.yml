@@ -1,0 +1,3 @@
+---
+# Default variables for thunderbird role
+role_execution_flag: "thunderbird_was_executed"
