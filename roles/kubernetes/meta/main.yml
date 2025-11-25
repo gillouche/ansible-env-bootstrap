@@ -13,3 +13,4 @@ dependencies:
   # Ensure platform prerequisites are validated before running this role
   - role: homebrew
     when: (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook'
+  - role: docker
