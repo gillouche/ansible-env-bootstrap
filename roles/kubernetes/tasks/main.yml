@@ -22,6 +22,7 @@
           - minikube
           - helm
           - k9s
+          - kubectx
         state: present
       become: false
 
