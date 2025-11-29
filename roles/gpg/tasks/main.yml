@@ -15,17 +15,48 @@
   when: not (gpg_macos_allowed | bool)
 
 - block:
-    - name: Ensure gnupg is installed via Homebrew (macOS)
+    - name: Ensure gpg tooling is installed via Homebrew (macOS)
       community.general.homebrew:
-        name: gnupg
+        name:
+         - gnupg
+         - pinentry-mac
         state: present
       become: false
 
-    - name: Ensure GPGFrontend is present via Homebrew Cask (macOS)
-      community.general.homebrew_cask:
-        name: gpgfrontend
-        state: present
+    - name: Define dotfiles paths
+      set_fact:
+        # Prefer dotfiles_dir from previous roles (home_setup or dotfiles); fallback to projects path
+        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/Desktop/workspace/projects/dotfiles')) }}"
+        user_home_dir: "/Users/{{ target_user }}"
+        target_group: staff
+
+    - name: Ensure ~/.gnupg directory exists with secure permissions
+      ansible.builtin.file:
+        path: "/{{ user_home_dir }}/.gnupg"
+        state: directory
+        mode: '0700'
       become: false
+
+    - name: Link gpg.conf from dotfiles if available
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/gpg/gpg.conf"
+        dest: "/{{ user_home_dir }}/.gnupg/gpg.conf"
+        state: link
+      become: false
+
+    - name: Link gpg-agent.conf from dotfiles if available
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/gpg/gpg-agent.conf"
+        dest: "/{{ user_home_dir }}/.gnupg/gpg-agent.conf"
+        state: link
+      become: false
+
+    - name: Install gpg-loopback helper into /usr/local/bin (macOS)
+      ansible.builtin.copy:
+        src: gpg-loopback
+        dest: /usr/local/bin/gpg-loopback
+        mode: '0755'
+      become: true
   when: gpg_macos_allowed | bool
 
 - name: Mark role as executed
