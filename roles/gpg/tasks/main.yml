@@ -51,12 +51,19 @@
         state: link
       become: false
 
+    - name: Check if gpg-loopback already exists in /usr/local/bin
+      ansible.builtin.stat:
+        path: /usr/local/bin/gpg-loopback
+      register: gpg_loopback_bin
+      changed_when: false
+
     - name: Install gpg-loopback helper into /usr/local/bin (macOS)
       ansible.builtin.copy:
         src: gpg-loopback
         dest: /usr/local/bin/gpg-loopback
         mode: '0755'
       become: true
+      when: not gpg_loopback_bin.stat.exists
   when: gpg_macos_allowed | bool
 
 - name: Mark role as executed
