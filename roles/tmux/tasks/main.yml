@@ -19,7 +19,7 @@
       community.general.homebrew:
         name:
           - tmux
-          - xclip
+          - reattach-to-user-namespace
         state: present
       become: false
 
