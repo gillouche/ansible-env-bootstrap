@@ -18,8 +18,8 @@
     - name: Ensure gpg tooling is installed via Homebrew (macOS)
       community.general.homebrew:
         name:
-         - gnupg
-         - pinentry-mac
+          - gnupg
+          - pinentry-mac
         state: present
       become: false
 
