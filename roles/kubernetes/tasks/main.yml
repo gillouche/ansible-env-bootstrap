@@ -23,6 +23,7 @@
           - helm
           - k9s
           - kubectx
+          - ytt
         state: present
       become: false
 
