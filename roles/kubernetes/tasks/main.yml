@@ -26,12 +26,6 @@
           - ytt
         state: present
       become: false
-
-    - name: Ensure Rancher Desktop is present via Homebrew Cask (macOS)
-      community.general.homebrew_cask:
-        name: rancher
-        state: present
-      become: false
   when: k8s_macos_allowed | bool
 
 - name: Mark role as executed
