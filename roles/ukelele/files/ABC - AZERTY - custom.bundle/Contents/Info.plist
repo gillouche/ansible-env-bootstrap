@@ -5,17 +5,17 @@
 	<key>CFBundleIdentifier</key>
 	<string>org.sil.ukelele.keyboardlayout.unsavedukeleledocument</string>
 	<key>CFBundleName</key>
-	<string>Unsaved Ukelele Document</string>
+	<string>ABC - AZERTY - custom</string>
 	<key>CFBundleVersion</key>
-	<string></string>
-	<key>KLInfo_French - custom</key>
+	<string>1.0.0</string>
+	<key>KLInfo_ABC - Azerty - custom</key>
 	<dict>
 		<key>TICapsLockLanguageSwitchCapable</key>
 		<false/>
 		<key>TISIconIsTemplate</key>
 		<false/>
 		<key>TISInputSourceID</key>
-		<string>org.sil.ukelele.keyboardlayout.unsavedukeleledocument.french-custom</string>
+		<string>org.sil.ukelele.keyboardlayout.unsavedukeleledocument.abc-azerty-custom</string>
 		<key>TISIntendedLanguage</key>
 		<string>fr-BE</string>
 	</dict>

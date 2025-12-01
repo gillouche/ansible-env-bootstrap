@@ -1,3 +1,4 @@
 # Direnv environment cache
 .direnv/
 .idea
+.DS_Store

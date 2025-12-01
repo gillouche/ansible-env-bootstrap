@@ -23,7 +23,7 @@
 
     - name: Define Keyboard Layout target directory (under user's Library)
       set_fact:
-        keyboard_layout_dir: "{{ ansible_env.HOME }}/Library/Keyboard Layout"
+        keyboard_layout_dir: "{{ ansible_env.HOME }}/Library/Keyboard Layouts"
 
     - name: Ensure 'Keyboard Layout' directory exists in user's Library
       ansible.builtin.file:
@@ -32,15 +32,15 @@
         mode: '0755'
       become: false
 
-    - name: Check if 'French - Custom.bundle' already exists in Keyboard Layout
+    - name: Check if 'ABC - AZERTY - custom.bundle' already exists in Keyboard Layout
       ansible.builtin.stat:
-        path: "{{ keyboard_layout_dir }}/French - Custom.bundle"
+        path: "{{ keyboard_layout_dir }}/ABC - AZERTY - custom.bundle"
       register: french_custom_bundle_stat
 
-    - name: Copy 'French - Custom.bundle' into Keyboard Layout if missing
+    - name: Copy 'ABC - AZERTY - custom.bundle' into Keyboard Layout if missing
       ansible.builtin.copy:
-        src: "French - Custom.bundle"
-        dest: "{{ keyboard_layout_dir }}/French - Custom.bundle"
+        src: "ABC - AZERTY - custom.bundle"
+        dest: "{{ keyboard_layout_dir }}/"
         mode: preserve
       when: not (french_custom_bundle_stat.stat.exists | default(false))
       become: false
