@@ -2,10 +2,11 @@
     description = "Dev environment with Python 3.14";
 
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+        flake-utils.url = "github:numtide/flake-utils";
     };
 
-    outputs = { self, nixpkgs }:
+    outputs = { self, nixpkgs, flake-utils }:
         let
             system = "aarch64-darwin";
             pkgs = nixpkgs.legacyPackages.${system};
