@@ -17,8 +17,8 @@
 - block:
     - name: Define dotfiles paths
       set_fact:
-        # If a dotfiles_dir was exported by home_setup, use it. Otherwise default to projects under Desktop.
-        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/Desktop/workspace/projects/dotfiles')) }}"
+        # If a dotfiles_dir was exported by home_setup, use it. Otherwise default to workspace in $HOME.
+        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/workspace/projects/dotfiles')) }}"
         dotfiles_parent: "{{ dotfiles_dir | dirname }}"
 
     - name: Check if dotfiles directory exists
@@ -31,13 +31,13 @@
       ansible.builtin.file:
         path: "{{ dotfiles_parent }}"
         state: directory
-        mode: '0755'
+        mode: "0755"
       become: false
       when: not dotfiles_dir_stat.stat.exists
 
     - name: Clone dotfiles repository when missing
       ansible.builtin.git:
-        repo: git@github.com:gillouche/dotfiles.git
+        repo: https://github.com/gillouche/dotfiles.git
         dest: "{{ dotfiles_dir }}"
         version: HEAD
         update: false

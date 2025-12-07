@@ -18,7 +18,7 @@
     - name: Define dotfiles paths
       set_fact:
         # Prefer dotfiles_dir from previous roles (home_setup); fallback to projects path
-        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/Desktop/workspace/projects/dotfiles')) }}"
+        dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/workspace/projects/dotfiles')) }}"
         user_home_dir: "/Users/{{ target_user }}"
         target_group: staff
 
