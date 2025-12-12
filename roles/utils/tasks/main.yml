@@ -1,5 +1,5 @@
 ---
-# tasks file for utils (install common CLI utilities) — macOS only
+# tasks file for utils (install utils CLI utilities) — macOS only
 
 - name: Skip if role already executed
   meta: end_role

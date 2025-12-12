@@ -1,7 +1,4 @@
 ---
-- name: Import common playbook
-  import_playbook: common.yml
-
 - hosts: localhost
   roles:
     - role: home_setup
