@@ -1,0 +1,50 @@
+---
+# tasks for curl_cacert — manage ~/.curlrc symlink to dotfiles
+
+- name: Skip if role already executed
+  meta: end_role
+  when: vars[role_execution_flag] | default(false)
+
+- name: Determine allowed platform for curl cacert setup (macOS MacBook only)
+  set_fact:
+    curl_cacert_macos_allowed: >-
+      {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
+
+- name: Stop role when not on a supported platform (macOS MacBook)
+  meta: end_role
+  when: not (curl_cacert_macos_allowed | bool)
+
+- block:
+    - name: Ensure curl is installed via Homebrew (macOS)
+      community.general.homebrew:
+        name: curl
+        state: present
+      become: false
+
+    - name: Define dotfiles path and user home
+      set_fact:
+        # Prefer dotfiles_dir injected by prior roles (home_setup), fallback to standard projects path
+        dotfiles_dir: "{{ (dotfiles_dir | default(lookup('env','HOME') + '/workspace/projects/dotfiles')) }}"
+        user_home_dir: "/Users/{{ target_user | default(ansible_facts['user_id'] | default('')) }}"
+
+    - name: Ensure dotfiles curl config exists (noop if present)
+      ansible.builtin.stat:
+        path: "{{ dotfiles_dir }}/curl/curlrc"
+      register: dotfiles_curlrc
+      changed_when: false
+      failed_when: false
+
+    - name: Link ~/.curlrc to dotfiles curlrc
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/curl/curlrc"
+        dest: "{{ user_home_dir }}/.curlrc"
+        state: link
+      when: dotfiles_curlrc.stat.exists | default(false)
+      become: false
+
+  when: curl_cacert_macos_allowed | bool
+
+- name: Mark role as executed
+  set_fact:
+    "{{ role_execution_flag }}": true
+    cacheable: true

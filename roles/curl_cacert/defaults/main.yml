@@ -1,0 +1,9 @@
+---
+# defaults for curl_cacert role
+
+# Each role defines its own execution flag so it can short‑circuit idempotently
+role_execution_flag: "curl_cacert_was_executed"
+
+# Optional: default dotfiles path (most setups override/provide dotfiles_dir
+# via other roles; tasks also fall back to this path using lookup('env','HOME'))
+curl_cacert_dotfiles_dir: "{{ lookup('env','HOME') + '/workspace/projects/dotfiles' }}"
