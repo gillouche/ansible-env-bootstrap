@@ -16,7 +16,6 @@
     - role: qobuz
     - role: llm
     - role: qemu
-    - role: raspberrypi
     - role: jetbrains
     - role: firefox
     - role: docker

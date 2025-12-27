@@ -1,3 +1,0 @@
----
-# Default variables for raspberrypi role
-role_execution_flag: "raspberrypi_was_executed"
