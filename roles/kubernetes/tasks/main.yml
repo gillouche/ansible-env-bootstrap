@@ -22,6 +22,7 @@
           - minikube
           - k9s
           - kubectx
+          - kubeseal
         state: present
       become: false
   when: k8s_macos_allowed | bool
