@@ -23,6 +23,7 @@
           - k9s
           - kubectx
           - kubeseal
+          - argocd
         state: present
       become: false
   when: k8s_macos_allowed | bool
