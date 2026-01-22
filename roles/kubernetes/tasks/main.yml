@@ -24,6 +24,7 @@
           - kubectx
           - kubeseal
           - argocd
+          - derailed/popeye/popeye
         state: present
       become: false
   when: k8s_macos_allowed | bool
