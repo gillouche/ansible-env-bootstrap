@@ -1,9 +1,9 @@
 ---
-- hosts: localhost
+- name: Run Post-Provisioning Tasks
+  hosts: macbooks
   roles: []
-
   post_tasks:
     - name: Warn about missing ~/.gitconfig.user
-      debug:
+      ansible.builtin.debug:
         msg: "Create ~/.gitconfig.user with your Git name + email"
       when: gitconfig_user_missing | default(false)

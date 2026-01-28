@@ -2,7 +2,8 @@
 - name: Import common macbook playbook
   import_playbook: macbook-common.yml
 
-- hosts: localhost
+- name: Configure Work MacBook
+  hosts: work
   roles: []
 
 - name: Import post task playbook

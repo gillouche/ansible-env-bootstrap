@@ -1,0 +1,23 @@
+---
+all:
+  vars:
+    ansible_connection: local
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  children:
+    macbooks:
+      vars:
+        device_type: macbook
+      children:
+        personal:
+          hosts:
+            macbook-personal:
+              ansible_host: localhost
+              profile: personal
+              target_user: "{{ lookup('env', 'USER') }}"
+        work:
+          hosts:
+            macbook-work:
+              ansible_host: localhost
+              profile: work
+              target_user: "{{ lookup('env', 'USER') }}"

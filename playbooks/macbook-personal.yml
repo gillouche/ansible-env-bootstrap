@@ -2,7 +2,8 @@
 - name: Import common macbook playbook
   import_playbook: macbook-common.yml
 
-- hosts: localhost
+- name: Configure Personal MacBook
+  hosts: personal
   roles:
     - role: curl_cacert
     - role: nix

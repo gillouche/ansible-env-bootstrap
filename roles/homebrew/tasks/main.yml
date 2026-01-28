@@ -2,18 +2,20 @@
 # tasks file for homebrew
 
 - name: Skip if role already executed
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: vars[role_execution_flag] | default(false)
 
 - name: Determine if role is allowed on this host (macOS MacBook only)
-  set_fact:
+  ansible.builtin.set_fact:
     homebrew_allowed: "{{ ansible_facts['os_family'] == 'Darwin' and (device_type | default('')) == 'macbook' }}"
 
 - name: Stop role when not on a MacBook (Darwin)
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: not homebrew_allowed | bool
 
 - name: Check for Homebrew binary paths
+  when: homebrew_allowed | bool
+
   block:
     - name: Check for brew at /opt/homebrew/bin/brew (Apple Silicon)
       ansible.builtin.stat:
@@ -41,9 +43,7 @@
       when: not (brew_apple.stat.exists or brew_intel.stat.exists)
       become: false
 
-  when: homebrew_allowed | bool
-
 - name: Mark role as executed
-  set_fact:
+  ansible.builtin.set_fact:
     "{{ role_execution_flag }}": true
     cacheable: true

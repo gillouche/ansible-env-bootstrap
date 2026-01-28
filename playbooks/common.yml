@@ -1,4 +1,5 @@
 ---
-- hosts: localhost
+- name: Common Setup
+  hosts: localhost
   roles:
     - facts

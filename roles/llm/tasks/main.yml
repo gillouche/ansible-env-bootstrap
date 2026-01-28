@@ -2,19 +2,23 @@
 # tasks file for llm (install ollama, gemini-cli, chatgpt on macOS)
 
 - name: Skip if role already executed
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: vars[role_execution_flag] | default(false)
 
 - name: Determine allowed platform for LLM tooling (macOS MacBook only)
-  set_fact:
+  ansible.builtin.set_fact:
     llm_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
 
 - name: Stop role when not on a supported platform (macOS MacBook)
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: not (llm_macos_allowed | bool)
 
-- block:
+- name: Conditional block for llm
+
+  when: llm_macos_allowed | bool
+
+  block:
     - name: Ensure ollama is installed via Homebrew (macOS)
       community.general.homebrew:
         name: ollama
@@ -25,7 +29,7 @@
       community.general.homebrew:
         name: gemini-cli
         state: present
-      ignore_errors: true
+      failed_when: false
       become: false
 
     - name: Ensure ChatGPT desktop is present via Homebrew Cask (macOS)
@@ -33,9 +37,7 @@
         name: chatgpt
         state: present
       become: false
-  when: llm_macos_allowed | bool
-
 - name: Mark role as executed
-  set_fact:
+  ansible.builtin.set_fact:
     "{{ role_execution_flag }}": true
     cacheable: true

@@ -1,14 +1,16 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: "Ensure local LLM tooling is installed: ollama, gemini-cli, chatgpt (cask) on macOS; ollama/chatgpt/gemini-cli via pacman/yay on Arch."
+  description: >-
+    Ensure local LLM tooling is installed: ollama, gemini-cli, chatgpt (cask) on macOS;
+    ollama/chatgpt/gemini-cli via pacman/yay on Arch.
   license: MIT
-  min_ansible_version: '2.13'
+  min_ansible_version: "2.13"
   platforms:
     - name: MacOSX
-      versions: ['all']
+      versions: ["all"]
     - name: GenericLinux
-      versions: ['all']
+      versions: ["all"]
 dependencies:
   # Ensure platform prerequisites are validated before running this role
   - role: homebrew

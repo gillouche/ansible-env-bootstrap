@@ -1,13 +1,15 @@
 ---
 galaxy_info:
   author: ansible-env-bootstrap
-  description: Gather and print detailed system facts for debugging, enforce required variables (like target_user),
+  description: >-
+    Gather and print detailed system facts for debugging,
+    enforce required variables (like target_user),
     and optionally end the play early after diagnostics.
   license: MIT
-  min_ansible_version: '2.13'
+  min_ansible_version: "2.13"
   platforms:
     - name: MacOSX
-      versions: ['all']
+      versions: ["all"]
     - name: GenericLinux
-      versions: ['all']
+      versions: ["all"]
 dependencies: []

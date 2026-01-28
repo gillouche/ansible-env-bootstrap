@@ -1,21 +1,26 @@
-profile: production
-skip-list:
-  # Initially relax to adopt linter gradually; CI still runs but won't fail the build.
-  - yaml[line-length]
-  - schema[galaxy]
-  - var-naming
-  - role-name
-parseable: true
-mock-roles:
-  - test
-warn-list:
-  - fqcn
-  - risky-file-permissions
-  - latest
-  - yaml[truthy]
-
+---
 exclude_paths:
-  - collections/
-  - inventories/
-  - uv.lock
   - .venv/
+  - collections/
+  - .github/
+  - node_modules/
+  - roles/**/files/
+  - roles/**/templates/
+  - inventories/group_vars/*.vault.yml
+
+# Promote common safety/style rules
+enable_list:
+  - fqcn-builtins
+  - no-changed-when
+  - no-log-password
+  - no-log-task
+  - risky-file-permissions
+  - deprecated-bare-vars
+
+# Keep some as warnings while iterating
+warn_list:
+  - yaml
+
+skip_list:
+  - var-naming[no-role-prefix]
+  - internal-error

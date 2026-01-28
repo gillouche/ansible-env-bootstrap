@@ -2,19 +2,23 @@
 # tasks file for neovim (install via Homebrew on macOS)
 
 - name: Skip if role already executed
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: vars[role_execution_flag] | default(false)
 
 - name: Determine allowed platform for Neovim setup (macOS MacBook only)
-  set_fact:
+  ansible.builtin.set_fact:
     neovim_macos_allowed: >-
       {{ (ansible_facts['os_family'] | default('')) == 'Darwin' and (device_type | default('')) == 'macbook' }}
 
 - name: Stop role when not on a supported platform (macOS MacBook)
-  meta: end_role
+  ansible.builtin.meta: end_role
   when: not (neovim_macos_allowed | bool)
 
-- block:
+- name: Conditional block for neovim
+
+  when: neovim_macos_allowed | bool
+
+  block:
     - name: Ensure Neovim is installed via Homebrew (macOS)
       community.general.homebrew:
         name: neovim
@@ -22,29 +26,32 @@
       become: false
 
     - name: Define dotfiles paths
-      set_fact:
+      ansible.builtin.set_fact:
         dotfiles_dir: "{{ (dotfiles_dir | default(ansible_env.HOME + '/workspace/projects/dotfiles')) }}"
         user_home_dir: "/Users/{{ target_user }}"
         target_group: staff
 
     - name: Check if nvim config folder exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ user_home_dir }}/.config/nvim"
       register: nvim_config_folder_stat
 
     - name: Backup existing Neovim config folder if it exists
-      command: mv "{{ user_home_dir }}/.config/nvim" "{{ dotfiles_dir }}/nvim_backup"
-      when: nvim_config_folder_stat.stat.exists and (sym.stat.islnk is defined and sym.stat.islnk == False)
+      ansible.builtin.command: mv "{{ user_home_dir }}/.config/nvim" "{{ dotfiles_dir }}/nvim_backup"
+      # Check if path exists AND is not a symlink (i.e. real directory)
+      when: >-
+        nvim_config_folder_stat.stat.exists
+        and (nvim_config_folder_stat.stat.islnk is defined
+             and not nvim_config_folder_stat.stat.islnk)
+      changed_when: true
 
     - name: Create symlink to Neovim config folder
-      file:
+      ansible.builtin.file:
         src: "{{ dotfiles_dir }}/neovim"
         dest: "{{ user_home_dir }}/.config/nvim"
         state: link
 
-  when: neovim_macos_allowed | bool
-
 - name: Mark role as executed
-  set_fact:
+  ansible.builtin.set_fact:
     "{{ role_execution_flag }}": true
     cacheable: true

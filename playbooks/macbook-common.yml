@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: Configure Common MacBook Settings
+  hosts: macbooks
   roles:
     - role: home_setup
     - role: homebrew
