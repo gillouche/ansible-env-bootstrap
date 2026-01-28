@@ -1,3 +1,2 @@
 ---
 # Default variables for llm role
-role_execution_flag: "llm_was_executed"

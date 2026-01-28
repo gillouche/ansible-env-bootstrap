@@ -1,10 +1,6 @@
 ---
 # tasks file for openssh — install OpenSSH via Homebrew on macOS
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for OpenSSH setup (macOS MacBook only)
   ansible.builtin.set_fact:
     openssh_macos_allowed: >-
@@ -25,7 +21,3 @@
           - openssh
         state: present
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

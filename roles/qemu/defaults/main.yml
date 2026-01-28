@@ -1,3 +1,2 @@
 ---
 # Default variables for qemu role
-role_execution_flag: "qemu_was_executed"

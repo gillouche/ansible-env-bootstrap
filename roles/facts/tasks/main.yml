@@ -1,10 +1,6 @@
 ---
 # tasks file for facts
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Check that the target_user variable has been provided to the playbook
   ansible.builtin.fail:
     msg: "The variable 'target_user' must be provided in order to run the playbook."
@@ -39,8 +35,3 @@
 - name: Optionally stop playbook after debug (disabled by default)
   ansible.builtin.meta: end_play
   when: end_after_facts | default(false) | bool
-
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

@@ -1,10 +1,6 @@
 ---
 # tasks for curl_cacert — manage ~/.curlrc symlink to dotfiles
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for curl cacert setup (macOS MacBook only)
   ansible.builtin.set_fact:
     curl_cacert_macos_allowed: >-
@@ -45,8 +41,3 @@
         state: link
       when: dotfiles_curlrc.stat.exists | default(false)
       become: false
-
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

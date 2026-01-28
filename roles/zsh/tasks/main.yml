@@ -1,10 +1,6 @@
 ---
 # tasks file for zsh (install and link config) — macOS only
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for zsh setup (macOS MacBook only)
   ansible.builtin.set_fact:
     zsh_macos_allowed: >-
@@ -58,8 +54,3 @@
         src: "{{ dotfiles_dir }}/zsh/zshrc"
         dest: "/{{ user_home_dir }}/.zshrc"
         state: link
-
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

@@ -1,10 +1,6 @@
 ---
 # tasks file for gpg (install gnupg and GPGFrontend on macOS)
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for GPG setup (macOS MacBook only)
   ansible.builtin.set_fact:
     gpg_macos_allowed: >-
@@ -54,7 +50,3 @@
         dest: "/{{ user_home_dir }}/.gnupg/gpg-agent.conf"
         state: link
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

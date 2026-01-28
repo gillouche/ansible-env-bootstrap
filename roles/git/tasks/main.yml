@@ -1,10 +1,6 @@
 ---
 # tasks file for git (install git and GitHub CLI) — macOS only
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for git setup (macOS MacBook only)
   ansible.builtin.set_fact:
     git_macos_allowed: >-
@@ -56,8 +52,3 @@
   ansible.builtin.set_fact:
     gitconfig_user_missing: true
   when: not gitconfig_user_stat.stat.exists
-
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

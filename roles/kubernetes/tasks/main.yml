@@ -1,10 +1,6 @@
 ---
 # tasks file for kubernetes (kubectl + minikube; Rancher Desktop UI) — macOS only
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for Kubernetes tooling setup (macOS MacBook only)
   ansible.builtin.set_fact:
     k8s_macos_allowed: >-
@@ -31,7 +27,3 @@
           - derailed/popeye/popeye
         state: present
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

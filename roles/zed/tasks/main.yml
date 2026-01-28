@@ -1,10 +1,6 @@
 ---
 # tasks file for zed (install Zed editor via Homebrew Cask on macOS)
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for Zed setup (macOS MacBook only)
   ansible.builtin.set_fact:
     zed_macos_allowed: >-
@@ -24,7 +20,3 @@
         name: zed
         state: present
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

@@ -1,10 +1,6 @@
 ---
 # tasks file for jetbrains (Toolbox + JetBrains Mono font on macOS)
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for JetBrains Toolbox handling (macOS MacBook only)
   ansible.builtin.set_fact:
     jetbrains_macos_allowed: >-
@@ -30,7 +26,3 @@
         name: font-jetbrains-mono
         state: present
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

@@ -1,4 +1,3 @@
 ---
 # Default variables for vlc role
 # This flag is used to ensure the role runs only once per host unless cleared.
-role_execution_flag: "vlc_was_executed"

@@ -1,3 +1,2 @@
 ---
 # Default variables for yubikey role
-role_execution_flag: "yubikey_was_executed"

@@ -1,10 +1,6 @@
 ---
 # tasks file for proton_privacy (install Proton apps via Homebrew Cask on macOS)
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platforms for Proton apps setup
   ansible.builtin.set_fact:
     proton_macos_allowed: >-
@@ -28,7 +24,3 @@
           - protonvpn
         state: present
       become: false
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true

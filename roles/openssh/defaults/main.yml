@@ -1,3 +1,2 @@
 ---
 # Default variables for openssh role
-role_execution_flag: "openssh_was_executed"

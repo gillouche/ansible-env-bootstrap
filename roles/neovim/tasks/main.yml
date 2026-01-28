@@ -1,10 +1,6 @@
 ---
 # tasks file for neovim (install via Homebrew on macOS)
 
-- name: Skip if role already executed
-  ansible.builtin.meta: end_role
-  when: vars[role_execution_flag] | default(false)
-
 - name: Determine allowed platform for Neovim setup (macOS MacBook only)
   ansible.builtin.set_fact:
     neovim_macos_allowed: >-
@@ -50,8 +46,3 @@
         src: "{{ dotfiles_dir }}/neovim"
         dest: "{{ user_home_dir }}/.config/nvim"
         state: link
-
-- name: Mark role as executed
-  ansible.builtin.set_fact:
-    "{{ role_execution_flag }}": true
-    cacheable: true
