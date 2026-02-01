@@ -25,6 +25,5 @@
           - kubeseal
           - argocd
           - derailed/popeye/popeye
-          - argoproj/tap/kubectl-argo-rollouts
         state: present
       become: false
